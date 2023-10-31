@@ -1,6 +1,6 @@
 {
   "name": "CanvasToDo",
-  "version": "2.0.1",
+  "version": "3.2.0",
   "description": "Description of CanvasToDo",
   "main": "index.js",
   "license": "UNLICENSED",
@@ -21,7 +21,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-intl": "5.12.5",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.3.4"
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.17.0",

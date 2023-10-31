@@ -46,6 +46,9 @@ module.exports = {
                         }`
                 }
             ]
+        },
+        page: {
+            source: './src/page/AssignmentDetails.jsx'
         }
     }]
 };

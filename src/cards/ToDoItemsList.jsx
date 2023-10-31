@@ -50,10 +50,13 @@
 // export default ToDoItemsList;
 
 import React, { useEffect, useState, Fragment } from 'react';
-import { Table, TableBody, TableCell, TableRow, Button } from '@ellucian/react-design-system/core';
+import { Table, TableBody, TableCell, TableRow } from '@ellucian/react-design-system/core';
 import { spacing40, spacing10 } from '@ellucian/react-design-system/core/styles/tokens';
 import { withStyles } from '@ellucian/react-design-system/core/styles';
 import PropTypes from 'prop-types';
+import { Link, BrowserRouter as Router } from 'react-router-dom';
+
+
 import { useIntl, IntlProvider } from 'react-intl';
 
 // Styles for the courses
@@ -188,34 +191,28 @@ const CanvasCard = (props) => {
                                     </TableBody>
                                 </Table> */}
                                 {canvasData.length > 0 ? (
-                                    <Table striped bordered hover>
+                                    <Table striped='true' bordered='true'>
                                         <TableBody>
                                             {canvasData.map(todo => (
                                                 <TableRow key={todo.assignment.id}>
                                                     <TableCell style={columnStyles}>
-                                                        <strong>Assignment:</strong> {todo.context_name}<br />
-                                                        {/* <strong>Assignment:</strong> {todo.assignment.description}<br /> */}
+                                                        <strong>Assignment:</strong> <Link to={`/assignment-details/${todo.assignment.id}`}>{todo.context_name}</Link><br />
                                                         <strong>Due:</strong> {new Date(todo.assignment.due_at).toLocaleDateString()}<br />
-                                                        {/* <strong>Points Possible:</strong> {todo.assignment.points_possible} */}
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
                                     </Table>
                                 ) : (
-                                    <div className={classes.text}>
-                                        Opportunity starts here!
-                                        <div style={{ marginTop: '20px' }}>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                href="https://www.uiw.edu/admissions/"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                Enroll Now
-                                            </Button>
-                                        </div>
+                                    <div>
+                                        <p>We apologize for the inconvenience. There seems to be an issue.</p>
+                                        <p>Please email <a href="mailto:webteam@uiwtx.edu">webteam@uiwtx.edu</a> with the following information:</p>
+                                        <ul>
+                                            <li>A screenshot of the issue you&apos;re facing.</li>
+                                            <li>The device you are using.</li>
+                                            <li>The browser you are on.</li>
+                                            <li>Any other information you think might be useful.</li>
+                                        </ul>
                                     </div>
                                 )}
 
@@ -241,9 +238,12 @@ CanvasCard.propTypes = {
 };
 
 function CanvasCardWrapper(props) {
+
     return (
         <IntlProvider locale="en">
-            <CanvasCard {...props} />
+            <Router>
+                <CanvasCard {...props} />
+            </Router>
         </IntlProvider>
     );
 }
