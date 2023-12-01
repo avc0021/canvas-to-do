@@ -8,7 +8,7 @@ const AppRouter = () => {
         <Router>
             <Switch>
                 <Route exact path="/" component={ToDoCard} />
-                <Route path="/details/:id" component={AssignmentDetails} />
+                <Route path="/assignment-details/:id" component={AssignmentDetails} />
             </Switch>
         </Router>
     );

@@ -47,8 +47,8 @@ module.exports = {
                 }
             ]
         },
-        page: {
-            source: './src/page/AssignmentDetails.jsx'
-        }
-    }]
+    }],
+    page: {
+        source: './src/page/router.jsx'
+    }
 };

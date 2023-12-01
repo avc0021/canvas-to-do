@@ -1,6 +1,6 @@
 {
   "name": "CanvasToDo",
-  "version": "3.2.0",
+  "version": "4.0.3",
   "description": "Description of CanvasToDo",
   "main": "index.js",
   "license": "UNLICENSED",
@@ -17,6 +17,7 @@
     "@ellucian/ds-icons": "https://cdn.elluciancloud.com/assets/EDS2/7.5.0/umd/path_design_system_icons.tgz",
     "@ellucian/experience-extension-utils": "https://cdn.elluciancloud.com/assets/SDK/utils/1.0.0/ellucian-experience-extension-utils-1.0.0.tgz",
     "@ellucian/react-design-system": "https://cdn.elluciancloud.com/assets/EDS2/7.5.0/umd/path_design_system.tgz",
+    "dompurify": "^3.0.6",
     "prop-types": "15.7.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",

@@ -1,60 +1,9 @@
-// import React, { useEffect, useState } from 'react';
-// import { Table, TableBody, TableCell, TableRow, TextLink } from '@ellucian/react-design-system/core';
-// // import { useHistory } from 'react-router-dom';
-
-// const ToDoItemsList = () => {
-//     const [toDoItems, setToDoItems] = useState([]);
-//     // const history = useHistory();
-
-//     useEffect(() => {
-//         fetch('https://182ddzp131.execute-api.us-east-2.amazonaws.com/default/canvas-to-do', {
-//             method: 'GET'
-//         })
-//             .then(response => response.json())
-//             .then(data => setToDoItems(data))
-//             .catch(error => console.error('Error fetching data:', error));
-//     }, []);
-
-//     const formatDate = (dateString) => {
-//         const date = new Date(dateString);
-//         return date.toLocaleString();
-//     };
-
-//     // const handleItemClick = (item) => {
-//     //     // Use history.push() to navigate to the assignment details route
-//     //     history.push(`/details/${item.id}`);
-//     // };
-
-//     return (
-//         <Table>
-//             <TableBody>
-//                 {toDoItems.map(item => (
-//                     <TableRow key={item.id}>
-//                         {/* <TableCell onClick={() => handleItemClick(item)}> */}
-//                         <TableCell>
-//                             Assignment: <TextLink>{item.context_name}</TextLink>
-//                         </TableCell>
-//                         <TableCell>
-//                             Due: {formatDate(item.assignment.due_at)}
-//                         </TableCell>
-//                         {/* <TableCell>
-//                             <p>Description: {item.assignment.description}</p>
-//                         </TableCell> */}
-//                     </TableRow>
-//                 ))}
-//             </TableBody>
-//         </Table>
-//     );
-// };
-
-// export default ToDoItemsList;
-
 import React, { useEffect, useState, Fragment } from 'react';
-import { Table, TableBody, TableCell, TableRow } from '@ellucian/react-design-system/core';
+import { Table, TableBody, TableCell, TableRow, TextLink } from '@ellucian/react-design-system/core';
 import { spacing40, spacing10 } from '@ellucian/react-design-system/core/styles/tokens';
 import { withStyles } from '@ellucian/react-design-system/core/styles';
 import PropTypes from 'prop-types';
-import { Link, BrowserRouter as Router } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 
 import { useIntl, IntlProvider } from 'react-intl';
@@ -91,7 +40,7 @@ const cacheKey = 'graphql-card:persons';
 const CanvasCard = (props) => {
     const {
         classes,
-        cardControl: { setLoadingStatus, setErrorMessage },
+        cardControl: { setLoadingStatus, setErrorMessage},
         data: { getEthosQuery },
         cache: { getItem, storeItem }
     } = props;
@@ -173,6 +122,23 @@ const CanvasCard = (props) => {
         }
     }, [persons]);
 
+    const handleNavigate = (event) => {
+        event.preventDefault(); // Prevents the default action of the event
+        window.open('https://canvas.uiw.edu/', '_blank');
+    };
+
+
+    // const handleNavigate = (event, assignment) => {
+    //     event.stopPropagation(); // This prevents the event from bubbling up to parent elements
+    //     console.log('Navigating with assignment:', assignment);
+
+
+    //     navigateToPage({
+    //         route: `/assignment-details/${assignment.id}`,
+    //         state: { assignmentDetails: assignment }
+    //     });
+    // };
+
     return (
         <Fragment>
             {persons && (
@@ -196,7 +162,14 @@ const CanvasCard = (props) => {
                                             {canvasData.map(todo => (
                                                 <TableRow key={todo.assignment.id}>
                                                     <TableCell style={columnStyles}>
-                                                        <strong>Assignment:</strong> <Link to={`/assignment-details/${todo.assignment.id}`}>{todo.context_name}</Link><br />
+                                                        <strong>Assignment:</strong>
+                                                        <TextLink onClick={(e) => handleNavigate(e, todo.assignment)}>
+                                                            {todo.context_name}
+                                                        </TextLink>
+                                                        {/* <TextLink onClick={(e) => handleNavigate(e, todo.assignment)}>
+                                                            {todo.context_name}
+                                                        </TextLink> */}
+                                                        <br />
                                                         <strong>Due:</strong> {new Date(todo.assignment.due_at).toLocaleDateString()}<br />
                                                     </TableCell>
                                                 </TableRow>
@@ -220,13 +193,16 @@ const CanvasCard = (props) => {
                         );
                     })}
                 </div>
-            )}
-            {!persons && (
-                <div className={classes.text}>
-                    {intl.formatMessage({ id: 'PersonInformationCard-noSelectedPerson' })}
-                </div>
-            )}
-        </Fragment>
+            )
+            }
+            {
+                !persons && (
+                    <div className={classes.text}>
+                        {intl.formatMessage({ id: 'PersonInformationCard-noSelectedPerson' })}
+                    </div>
+                )
+            }
+        </Fragment >
     );
 };
 
@@ -241,9 +217,9 @@ function CanvasCardWrapper(props) {
 
     return (
         <IntlProvider locale="en">
-            <Router>
-                <CanvasCard {...props} />
-            </Router>
+
+            <CanvasCard {...props} />
+
         </IntlProvider>
     );
 }
