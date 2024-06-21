@@ -3,9 +3,6 @@ import { Table, TableBody, TableCell, TableRow, TextLink } from '@ellucian/react
 import { spacing40, spacing10 } from '@ellucian/react-design-system/core/styles/tokens';
 import { withStyles } from '@ellucian/react-design-system/core/styles';
 import PropTypes from 'prop-types';
-// import { Link } from 'react-router-dom';
-
-
 import { useIntl, IntlProvider } from 'react-intl';
 
 // Styles for the courses
@@ -20,8 +17,7 @@ const columnStyles = {
     justifyContent: 'space-around'
 };
 
-
-// // Styles for the card
+// Styles for the card and TextLink hover
 const styles = () => ({
     card: {
         marginRight: spacing40,
@@ -31,16 +27,47 @@ const styles = () => ({
     text: {
         marginRight: spacing40,
         marginLeft: spacing40
+    },
+    link: {
+        color: 'black',
+        textDecoration: 'none',
+        '&:hover': {
+            color: '#aa1010',
+            textDecoration: 'none'
+        }
+    },
+    dueToday: {
+        fontWeight: 'bold',
+        color: '#aa1010'
+    },
+    dueSoon: {
+        color: '#aa1010'
     }
 });
 
 const cacheKey = 'graphql-card:persons';
 
+// Function to check if a date is today
+const isToday = (someDate) => {
+    const today = new Date();
+    return someDate.getDate() === today.getDate() &&
+        someDate.getMonth() === today.getMonth() &&
+        someDate.getFullYear() === today.getFullYear();
+};
+
+// Function to check if a date is 2-3 days from today
+const isDueSoon = (someDate) => {
+    const today = new Date();
+    const timeDiff = someDate.getTime() - today.getTime();
+    const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return dayDiff === 2 || dayDiff === 3;
+};
+
 // CanvasCard component
 const CanvasCard = (props) => {
     const {
         classes,
-        cardControl: { setLoadingStatus, setErrorMessage},
+        cardControl: { setLoadingStatus, setErrorMessage },
         data: { getEthosQuery },
         cache: { getItem, storeItem }
     } = props;
@@ -48,7 +75,6 @@ const CanvasCard = (props) => {
     const intl = useIntl();
     const [persons, setPersons] = useState();
     const [canvasData, setCanvasData] = useState([]);
-
 
     useEffect(() => {
         (async () => {
@@ -113,11 +139,23 @@ const CanvasCard = (props) => {
         }
     }
 
+    // Enable this code after testing and comment out the next useEffect from 126-135
+    // useEffect(() => {
+    //     if (persons && persons.length > 0) {
+    //         persons.forEach(person => {
+    //             const bannerId = person.credentials.filter((cred) => cred.type === 'bannerId')[0]?.value;
+    //             sendBannerIdToLambda(bannerId);
+    //         });
+    //     }
+    // }, [persons]);
+
     useEffect(() => {
         if (persons && persons.length > 0) {
-            persons.forEach(person => {
-                const bannerId = person.credentials.filter((cred) => cred.type === 'bannerId')[0]?.value;
-                sendBannerIdToLambda(bannerId);
+            // Temporary hardcoded dummy bannerId for testing
+            const dummyBannerId = 'W01331081';
+            // Send the dummyBannerId for each person without using the person variable
+            persons.forEach(() => {
+                sendBannerIdToLambda(dummyBannerId);
             });
         }
     }, [persons]);
@@ -126,18 +164,6 @@ const CanvasCard = (props) => {
         event.preventDefault(); // Prevents the default action of the event
         window.open('https://canvas.uiw.edu/', '_blank');
     };
-
-
-    // const handleNavigate = (event, assignment) => {
-    //     event.stopPropagation(); // This prevents the event from bubbling up to parent elements
-    //     console.log('Navigating with assignment:', assignment);
-
-
-    //     navigateToPage({
-    //         route: `/assignment-details/${assignment.id}`,
-    //         state: { assignmentDetails: assignment }
-    //     });
-    // };
 
     return (
         <Fragment>
@@ -163,38 +189,36 @@ const CanvasCard = (props) => {
                                                 <TableRow key={todo.assignment.id}>
                                                     <TableCell style={columnStyles}>
                                                         <strong>Assignment:</strong>
-                                                        <TextLink onClick={(e) => handleNavigate(e, todo.assignment)}>
-                                                            {todo.context_name}
+                                                        <TextLink
+                                                            className={classes.link}
+                                                            onClick={(e) => handleNavigate(e, todo.assignment)}
+                                                        >
+                                                            {todo.context_name.replace(/&/g, ' & ')}
                                                         </TextLink>
-                                                        {/* <TextLink onClick={(e) => handleNavigate(e, todo.assignment)}>
-                                                            {todo.context_name}
-                                                        </TextLink> */}
                                                         <br />
-                                                        <strong>Due:</strong> {new Date(todo.assignment.due_at).toLocaleDateString()}<br />
+                                                        <strong>Due:</strong> 
+                                                        <span className={
+                                                            isToday(new Date(todo.assignment.due_at)) ? classes.dueToday : 
+                                                                isDueSoon(new Date(todo.assignment.due_at)) ? classes.dueSoon : ''
+                                                        }>
+                                                            {new Date(todo.assignment.due_at).toLocaleDateString()}
+                                                        </span>
+                                                        <br />
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
                                     </Table>
                                 ) : (
-                                    <div>
-                                        <p>We apologize for the inconvenience. There seems to be an issue.</p>
-                                        <p>Please email <a href="mailto:webteam@uiwtx.edu">webteam@uiwtx.edu</a> with the following information:</p>
-                                        <ul>
-                                            <li>A screenshot of the issue you&apos;re facing.</li>
-                                            <li>The device you are using.</li>
-                                            <li>The browser you are on.</li>
-                                            <li>Any other information you think might be useful.</li>
-                                        </ul>
+                                    <div className={classes.text}>
+                                        <p>There are no items at this time.</p>
                                     </div>
                                 )}
-
                             </Fragment>
                         );
                     })}
                 </div>
-            )
-            }
+            )}
             {
                 !persons && (
                     <div className={classes.text}>
@@ -202,7 +226,7 @@ const CanvasCard = (props) => {
                     </div>
                 )
             }
-        </Fragment >
+        </Fragment>
     );
 };
 
@@ -214,14 +238,11 @@ CanvasCard.propTypes = {
 };
 
 function CanvasCardWrapper(props) {
-
     return (
         <IntlProvider locale="en">
-
             <CanvasCard {...props} />
-
         </IntlProvider>
     );
 }
 
-export default (withStyles(styles)(CanvasCardWrapper));
+export default withStyles(styles)(CanvasCardWrapper);
