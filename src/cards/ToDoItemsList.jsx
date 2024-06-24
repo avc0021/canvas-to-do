@@ -6,16 +6,16 @@ import PropTypes from 'prop-types';
 import { useIntl, IntlProvider } from 'react-intl';
 
 // Styles for the courses
-const columnStyles = {
-    height: '100%',
-    marginTop: 0,
-    marginRight: spacing40,
-    marginBottom: 0,
-    marginLeft: spacing40,
+const columnStyles = (isDueSoon) => ({
+    padding: '4px 8px',  // Reduce padding to make rows shorter
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-around'
-};
+    justifyContent: 'space-between',
+    backgroundColor: isDueSoon ? '#aa1010' : 'white',
+    borderRadius: '8px',
+    border: `1px solid ${isDueSoon ? '#aa1010' : '#aa1010'}`,
+    color: isDueSoon ? 'white' : '#aa1010',
+});
 
 // Styles for the card and TextLink hover
 const styles = () => ({
@@ -29,19 +29,35 @@ const styles = () => ({
         marginLeft: spacing40
     },
     link: {
-        color: 'black',
+        color: 'white',
         textDecoration: 'none',
         '&:hover': {
-            color: '#aa1010',
-            textDecoration: 'none'
+            color: 'black',
+            textDecoration: 'underline'
         }
     },
     dueToday: {
         fontWeight: 'bold',
-        color: '#aa1010'
+        color: 'white'
     },
     dueSoon: {
-        color: '#aa1010'
+        color: 'white'
+    },
+    assignmentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    assignmentText: {
+        marginBottom: '2px',  // Reduce or remove the margin between sections
+    },
+    dueText: {
+        marginTop: '2px',  // Reduce or remove the margin between sections
+    },
+    tableRow: {
+        marginBottom: '8px',  // Add space between rows
+    },
+    tableCell: {
+        paddingBottom: '16px'  // Ensure padding at bottom of cell
     }
 });
 
@@ -55,12 +71,12 @@ const isToday = (someDate) => {
         someDate.getFullYear() === today.getFullYear();
 };
 
-// Function to check if a date is 2-3 days from today
+// Function to check if a date is 1-2 days from today
 const isDueSoon = (someDate) => {
     const today = new Date();
     const timeDiff = someDate.getTime() - today.getTime();
     const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return dayDiff === 2 || dayDiff === 3;
+    return dayDiff === 1 || dayDiff === 2;
 };
 
 // CanvasCard component
@@ -170,43 +186,37 @@ const CanvasCard = (props) => {
             {persons && (
                 <div className={classes.card}>
                     {persons.map((person) => {
-                        // const bannerId = person.credentials.filter((cred) => cred.type === 'bannerId')[0]?.value;
-
                         return (
                             <Fragment key={person.id}>
-                                {/* <Table stickyHeader className={classes.table}>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>Banner Id:</TableCell>
-                                            <TableCell align="Left">{bannerId}</TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table> */}
                                 {canvasData.length > 0 ? (
-                                    <Table striped='true' bordered='true'>
+                                    <Table>
                                         <TableBody>
-                                            {canvasData.map(todo => (
-                                                <TableRow key={todo.assignment.id}>
-                                                    <TableCell style={columnStyles}>
-                                                        <strong>Assignment:</strong>
-                                                        <TextLink
-                                                            className={classes.link}
-                                                            onClick={(e) => handleNavigate(e, todo.assignment)}
-                                                        >
-                                                            {todo.context_name.replace(/&/g, ' & ')}
-                                                        </TextLink>
-                                                        <br />
-                                                        <strong>Due:</strong> 
-                                                        <span className={
-                                                            isToday(new Date(todo.assignment.due_at)) ? classes.dueToday : 
-                                                                isDueSoon(new Date(todo.assignment.due_at)) ? classes.dueSoon : ''
-                                                        }>
-                                                            {new Date(todo.assignment.due_at).toLocaleDateString()}
-                                                        </span>
-                                                        <br />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {canvasData.map(todo => {
+                                                const dueDate = new Date(todo.assignment.due_at);
+                                                const isSoon = isDueSoon(dueDate);
+                                                return (
+                                                    <TableRow key={todo.assignment.id} className={classes.tableRow}>
+                                                        <TableCell style={columnStyles(isSoon)} className={classes.tableCell}>
+                                                            <div className={classes.assignmentContainer}>
+                                                                <strong className={classes.assignmentText}>Assignment:</strong>
+                                                                <TextLink
+                                                                    className={classes.link}
+                                                                    onClick={(e) => handleNavigate(e, todo.assignment)}
+                                                                >
+                                                                    {todo.context_name.replace(/&/g, ' & ')}
+                                                                </TextLink>
+                                                                <strong className={classes.dueText}>Due:</strong>
+                                                                <span className={
+                                                                    isToday(dueDate) ? classes.dueToday : 
+                                                                        isSoon ? classes.dueSoon : ''
+                                                                }>
+                                                                    {dueDate.toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 ) : (
