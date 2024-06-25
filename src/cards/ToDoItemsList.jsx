@@ -1,64 +1,54 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { Table, TableBody, TableCell, TableRow, TextLink } from '@ellucian/react-design-system/core';
-import { spacing40, spacing10 } from '@ellucian/react-design-system/core/styles/tokens';
+import { TextLink } from '@ellucian/react-design-system/core';
 import { withStyles } from '@ellucian/react-design-system/core/styles';
 import PropTypes from 'prop-types';
 import { useIntl, IntlProvider } from 'react-intl';
 
-// Styles for the courses
-const columnStyles = (isDueSoon) => ({
-    padding: '4px 8px',  // Reduce padding to make rows shorter
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: isDueSoon ? '#aa1010' : 'white',
-    borderRadius: '8px',
-    border: `1px solid ${isDueSoon ? '#aa1010' : '#aa1010'}`,
-    color: isDueSoon ? 'white' : '#aa1010',
-});
-
-// Styles for the card and TextLink hover
+// Styles for the card and assignments
 const styles = () => ({
     card: {
-        marginRight: spacing40,
-        marginLeft: spacing40,
-        paddingTop: spacing10
-    },
-    text: {
-        marginRight: spacing40,
-        marginLeft: spacing40
-    },
-    link: {
-        color: 'white',
-        textDecoration: 'none',
-        '&:hover': {
-            color: 'black',
-            textDecoration: 'underline'
-        }
-    },
-    dueToday: {
-        fontWeight: 'bold',
-        color: 'white'
-    },
-    dueSoon: {
-        color: 'white'
-    },
-    assignmentContainer: {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        width: '100%',
+        height: '100%',
+        // padding: '20px',
+        textAlign: 'center',
+        overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
-    assignmentText: {
-        marginBottom: '2px',  // Reduce or remove the margin between sections
+    assignments: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        overflowY: 'auto'
     },
-    dueText: {
-        marginTop: '2px',  // Reduce or remove the margin between sections
+    assignment: {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        fontSize: '0.875rem',
+        padding: '10px',
+        border: '1px solid #aa1010',
+        borderRadius: '5px',
+        textAlign: 'left'
     },
-    tableRow: {
-        marginBottom: '8px',  // Add space between rows
+    assignmentDue: {
+        backgroundColor: '#aa1010',
+        color: '#ffffff',
     },
-    tableCell: {
-        paddingBottom: '16px'  // Ensure padding at bottom of cell
-    }
+    link: {
+        color: 'inherit',
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+            color: 'inherit'
+        }
+    },
+    linkDue: {
+        color: 'inherit',
+    },
 });
 
 const cacheKey = 'graphql-card:persons';
@@ -155,7 +145,7 @@ const CanvasCard = (props) => {
         }
     }
 
-    // Enable this code after testing and comment out the next useEffect from 126-135
+    // Enable this code after testing and comment out the next useEffect from 126-135, if needed Adjust Card Styles in GPT. 
     // useEffect(() => {
     //     if (persons && persons.length > 0) {
     //         persons.forEach(person => {
@@ -185,48 +175,40 @@ const CanvasCard = (props) => {
         <Fragment>
             {persons && (
                 <div className={classes.card}>
-                    {persons.map((person) => {
-                        return (
-                            <Fragment key={person.id}>
-                                {canvasData.length > 0 ? (
-                                    <Table>
-                                        <TableBody>
-                                            {canvasData.map(todo => {
-                                                const dueDate = new Date(todo.assignment.due_at);
-                                                const isSoon = isDueSoon(dueDate);
-                                                return (
-                                                    <TableRow key={todo.assignment.id} className={classes.tableRow}>
-                                                        <TableCell style={columnStyles(isSoon)} className={classes.tableCell}>
-                                                            <div className={classes.assignmentContainer}>
-                                                                <strong className={classes.assignmentText}>Assignment:</strong>
-                                                                <TextLink
-                                                                    className={classes.link}
-                                                                    onClick={(e) => handleNavigate(e, todo.assignment)}
-                                                                >
-                                                                    {todo.context_name.replace(/&/g, ' & ')}
-                                                                </TextLink>
-                                                                <strong className={classes.dueText}>Due:</strong>
-                                                                <span className={
-                                                                    isToday(dueDate) ? classes.dueToday : 
-                                                                        isSoon ? classes.dueSoon : ''
-                                                                }>
-                                                                    {dueDate.toLocaleDateString()}
-                                                                </span>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <div className={classes.text}>
-                                        <p>There are no items at this time.</p>
-                                    </div>
-                                )}
-                            </Fragment>
-                        );
-                    })}
+                    <div className={classes.assignments}>
+                        {persons.map((person) => {
+                            return (
+                                <Fragment key={person.id}>
+                                    {canvasData.length > 0 ? (
+                                        canvasData.map(todo => {
+                                            const dueDate = new Date(todo.assignment.due_at);
+                                            const isSoon = isDueSoon(dueDate);
+                                            const isDue = isToday(dueDate) || isSoon;
+                                            return (
+                                                <div
+                                                    key={todo.assignment.id}
+                                                    className={`${classes.assignment} ${isDue ? classes.assignmentDue : ''}`}
+                                                >
+                                                    <strong>Assignment: </strong>
+                                                    <TextLink
+                                                        className={`${classes.link} ${isDue ? classes.linkDue : ''}`}
+                                                        onClick={(e) => handleNavigate(e, todo.assignment)}
+                                                    >
+                                                        {todo.context_name.replace(/&/g, ' & ')}
+                                                    </TextLink><br />
+                                                    <strong>Due:</strong> <span>{dueDate.toLocaleDateString()}</span>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className={classes.text}>
+                                            <p>There are no items at this time.</p>
+                                        </div>
+                                    )}
+                                </Fragment>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
             {
