@@ -121,7 +121,7 @@ const CanvasCard = (props) => {
         console.log(`Sending bannerId to Lambda: ${bannerId}`);
 
         // Add the bannerId as a query parameter to the endpoint URL
-        const endpoint = `https://182ddzp131.execute-api.us-east-2.amazonaws.com/default/canvas-to-do?bannerId=${bannerId}`;
+        const endpoint = `https://fk71tl9cn0.execute-api.us-east-2.amazonaws.com/default/canvas_to_do?bannerId=${bannerId}`;
 
         try {
             const response = await fetch(endpoint, {
