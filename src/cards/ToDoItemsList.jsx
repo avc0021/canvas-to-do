@@ -145,23 +145,11 @@ const CanvasCard = (props) => {
         }
     }
 
-    // Enable this code after testing and comment out the next useEffect from 126-135, if needed Adjust Card Styles in GPT. 
-    // useEffect(() => {
-    //     if (persons && persons.length > 0) {
-    //         persons.forEach(person => {
-    //             const bannerId = person.credentials.filter((cred) => cred.type === 'bannerId')[0]?.value;
-    //             sendBannerIdToLambda(bannerId);
-    //         });
-    //     }
-    // }, [persons]);
-
     useEffect(() => {
         if (persons && persons.length > 0) {
-            // Temporary hardcoded dummy bannerId for testing
-            const dummyBannerId = 'W01331081';
-            // Send the dummyBannerId for each person without using the person variable
-            persons.forEach(() => {
-                sendBannerIdToLambda(dummyBannerId);
+            persons.forEach(person => {
+                const bannerId = person.credentials.filter((cred) => cred.type === 'bannerId')[0]?.value;
+                sendBannerIdToLambda(bannerId);
             });
         }
     }, [persons]);

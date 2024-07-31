@@ -1,7 +1,7 @@
 {
   "name": "CanvasToDo",
-  "version": "4.4.7",
-  "description": "Description of CanvasToDo",
+  "version": "4.4.9",
+  "description": "Canvas To Do Card",
   "main": "index.js",
   "license": "UNLICENSED",
   "scripts": {
